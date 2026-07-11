@@ -134,7 +134,7 @@ export default function SettingsDialog() {
           <Settings className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[540px] bg-[#0d0d10] border-[var(--border-strong)] text-[var(--text-primary)] max-h-[88vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[680px] bg-[#0d0d10] border-[var(--border-strong)] text-[var(--text-primary)] max-h-[88vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold flex items-center gap-2">
             <Settings className="h-5 w-5 text-[var(--accent-light)]" />

@@ -146,7 +146,7 @@ export default function ChatInput({
             placeholder="Schreib eine Nachricht..."
             disabled={isStreaming}
             rows={1}
-            className="flex-1 bg-transparent border-0 outline-none resize-none text-[--text-base] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] leading-relaxed min-h-[1.8em] max-h-[200px] py-1.5 px-1 focus:ring-0"
+            className="flex-1 bg-transparent border-0 outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] leading-normal py-2 px-1 min-h-[2em] max-h-[200px] focus:ring-0"
           />
 
           <div className="flex items-center gap-1 shrink-0">
