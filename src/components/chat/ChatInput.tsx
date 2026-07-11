@@ -11,7 +11,6 @@ import {
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useChatStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -139,7 +138,7 @@ export default function ChatInput({
               : "border-[var(--border)] focus-within:border-[var(--accent)]/40 focus-within:shadow-[0_0_12px_var(--accent-glow)]"
           )}
         >
-          <Textarea
+          <textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -147,7 +146,7 @@ export default function ChatInput({
             placeholder="Schreib eine Nachricht..."
             disabled={isStreaming}
             rows={1}
-            className="flex-1 bg-transparent border-0 outline-none resize-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] min-h-[24px] max-h-[200px] py-1.5 px-1 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="flex-1 bg-transparent border-0 outline-none resize-none text-[--text-base] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] leading-relaxed min-h-[1.8em] max-h-[200px] py-1.5 px-1 focus:ring-0"
           />
 
           <div className="flex items-center gap-1 shrink-0">

@@ -134,7 +134,7 @@ export default function SettingsDialog() {
           <Settings className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[540px] bg-[#0d0d10] border-[var(--border-strong)] text-[var(--text-primary)] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[540px] bg-[#0d0d10] border-[var(--border-strong)] text-[var(--text-primary)] max-h-[88vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold flex items-center gap-2">
             <Settings className="h-5 w-5 text-[var(--accent-light)]" />
@@ -416,8 +416,8 @@ export default function SettingsDialog() {
                   <SelectContent className="bg-[#0d0d10] border-[var(--border-strong)]">
                     <SelectItem value="sm" className="text-xs">Klein (14px)</SelectItem>
                     <SelectItem value="md" className="text-xs">Mittel (18px)</SelectItem>
-                    <SelectItem value="lg" className="text-xs">Groß (24px)</SelectItem>
-                    <SelectItem value="xl" className="text-xs">TV/4K (32px)</SelectItem>
+                    <SelectItem value="lg" className="text-xs">Groß (21px)</SelectItem>
+                    <SelectItem value="xl" className="text-xs">TV/4K (24px)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -65,8 +65,8 @@ body {
 /* === UI Scale === */
 .scale-sm { font-size: 14px; }
 .scale-md { font-size: 18px; }
-.scale-lg { font-size: 24px; }
-.scale-xl { font-size: 32px; }
+.scale-lg { font-size: 21px; }
+.scale-xl { font-size: 24px; }
 
 html {
   font-size: 14px;
