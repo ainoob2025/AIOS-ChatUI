@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useChatStore } from "@/lib/store";
 import { sendChatMessage } from "@/lib/api";
@@ -8,6 +8,7 @@ import type { Message } from "@/lib/types";
 import ChatSidebar from "./ChatSidebar";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
+import ModelSwitcher from "./ModelSwitcher";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ChatInterface() {
@@ -26,6 +27,9 @@ export default function ChatInterface() {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [reasoningEffort, setReasoningEffort] = useState<
+    "low" | "medium" | "high"
+  >("medium");
 
   const activeConversation = conversations.find(
     (c) => c.id === activeConversationId
@@ -100,41 +104,41 @@ export default function ChatInterface() {
       }
 
       if (conv) {
-        // Include all messages except the empty assistant placeholder
         for (const msg of conv.messages) {
           if (msg.id === assistantId) continue;
           apiMessages.push({ role: msg.role, content: msg.content });
         }
       }
 
-      // Create abort controller
       abortControllerRef.current = new AbortController();
 
-      await sendChatMessage(
-        model.baseURL,
-        model.apiKey,
-        model.model,
-        apiMessages,
-        settings.temperature,
-        settings.maxTokens,
-        (chunk) => {
+      await sendChatMessage({
+        baseURL: model.baseURL,
+        apiKey: model.apiKey,
+        model: model.model,
+        messages: apiMessages,
+        temperature: settings.temperature,
+        maxTokens: settings.maxTokens,
+        reasoningEffort: model.reasoningEnabled
+          ? reasoningEffort
+          : undefined,
+        onChunk: (chunk) => {
           appendToStreamingMessage(chunk);
           scrollToBottom();
         },
-        () => {
+        onDone: () => {
           finishStreaming();
           abortControllerRef.current = null;
         },
-        (error) => {
-          // Append error to the streaming message
+        onError: (error) => {
           appendToStreamingMessage(
             `\n\n❌ **Fehler:** ${error.message}`
           );
           finishStreaming();
           abortControllerRef.current = null;
         },
-        abortControllerRef.current.signal
-      );
+        abortSignal: abortControllerRef.current.signal,
+      });
     },
     [
       activeConversationId,
@@ -144,6 +148,7 @@ export default function ChatInterface() {
       appendToStreamingMessage,
       finishStreaming,
       settings,
+      reasoningEffort,
       scrollToBottom,
     ]
   );
@@ -159,10 +164,19 @@ export default function ChatInterface() {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Bar — Model Switcher */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--surface)]/50">
+          <ModelSwitcher
+            reasoningEffort={reasoningEffort}
+            onReasoningEffortChange={setReasoningEffort}
+          />
+        </div>
+
         {/* Messages */}
         <ScrollArea className="flex-1" ref={scrollRef}>
           <div className="max-w-3xl mx-auto w-full">
-            {!activeConversation || activeConversation.messages.length === 0 ? (
+            {!activeConversation ||
+            activeConversation.messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full min-h-[60vh] px-4">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/[0.08] flex items-center justify-center mb-6">
                   <svg

@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuidv4 } from "uuid";
 import type { Conversation, Message, AppSettings, ModelConfig } from "./types";
+import { fetchModels } from "./api";
 
 const DEFAULT_MODEL: ModelConfig = {
   id: "default",
@@ -11,6 +12,9 @@ const DEFAULT_MODEL: ModelConfig = {
   baseURL: "http://localhost:10010",
   apiKey: "not-needed",
   model: "main-model",
+  reasoningEnabled: false,
+  reasoningEffort: "medium",
+  availableModels: [],
 };
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -18,7 +22,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   activeModelId: "default",
   systemPrompt: "",
   temperature: 0.7,
-  maxTokens: 4096,
+  maxTokens: 0, // 0 = kein Limit
 };
 
 interface ChatStore {
@@ -52,6 +56,10 @@ interface ChatStore {
   updateModel: (id: string, updates: Partial<ModelConfig>) => void;
   setActiveModel: (id: string) => void;
   getActiveModel: () => ModelConfig;
+
+  // Actions - Model Discovery
+  discoverModels: (modelId: string) => Promise<string[]>;
+  refreshAllModels: () => Promise<void>;
 
   // Actions - UI
   toggleSidebar: () => void;
@@ -119,7 +127,6 @@ export const useChatStore = create<ChatStore>()(
                   ...c,
                   messages: [...c.messages, message],
                   updatedAt: Date.now(),
-                  // Auto-title: use first user message
                   title:
                     c.title === "Neuer Chat" && message.role === "user"
                       ? message.content.slice(0, 50) +
@@ -206,6 +213,46 @@ export const useChatStore = create<ChatStore>()(
           settings.models.find((m) => m.id === settings.activeModelId) ||
           settings.models[0]
         );
+      },
+
+      discoverModels: async (modelId) => {
+        const { settings } = get();
+        const model = settings.models.find((m) => m.id === modelId);
+        if (!model) return [];
+
+        const result = await fetchModels(model.baseURL, model.apiKey);
+        if (result.ok && result.models.length > 0) {
+          set((state) => ({
+            settings: {
+              ...state.settings,
+              models: state.settings.models.map((m) =>
+                m.id === modelId
+                  ? { ...m, availableModels: result.models }
+                  : m
+              ),
+            },
+          }));
+        }
+        return result.models;
+      },
+
+      refreshAllModels: async () => {
+        const { settings } = get();
+        for (const model of settings.models) {
+          const result = await fetchModels(model.baseURL, model.apiKey);
+          if (result.ok) {
+            set((state) => ({
+              settings: {
+                ...state.settings,
+                models: state.settings.models.map((m) =>
+                  m.id === model.id
+                    ? { ...m, availableModels: result.models }
+                    : m
+                ),
+              },
+            }));
+          }
+        }
       },
 
       toggleSidebar: () => {

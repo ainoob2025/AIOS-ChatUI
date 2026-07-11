@@ -1,29 +1,62 @@
 // API Layer für die Kommunikation mit dem AI-OS Backend
 
-import type { ChatCompletionRequest, Message, StreamChunk } from "./types";
+import type {
+  ChatCompletionRequest,
+  ModelListResponse,
+  StreamChunk,
+} from "./types";
+
+export interface SendMessageParams {
+  baseURL: string;
+  apiKey: string;
+  model: string;
+  messages: { role: string; content: string }[];
+  temperature: number;
+  maxTokens: number;
+  reasoningEffort?: string;
+  onChunk: (text: string) => void;
+  onReasoningChunk?: (text: string) => void;
+  onDone: () => void;
+  onError: (error: Error) => void;
+  abortSignal?: AbortSignal;
+}
 
 export async function sendChatMessage(
-  baseURL: string,
-  apiKey: string,
-  model: string,
-  messages: { role: string; content: string }[],
-  temperature: number,
-  maxTokens: number,
-  onChunk: (text: string) => void,
-  onDone: () => void,
-  onError: (error: Error) => void,
-  abortSignal?: AbortSignal
+  params: SendMessageParams
 ): Promise<void> {
-  // Entferne trailing slash von der baseURL
+  const {
+    baseURL,
+    apiKey,
+    model,
+    messages,
+    temperature,
+    maxTokens,
+    reasoningEffort,
+    onChunk,
+    onReasoningChunk,
+    onDone,
+    onError,
+    abortSignal,
+  } = params;
+
   const cleanBaseURL = baseURL.replace(/\/+$/, "");
 
-  const body: ChatCompletionRequest = {
+  const body: Record<string, unknown> = {
     model,
     messages,
     stream: true,
     temperature,
-    max_tokens: maxTokens,
   };
+
+  // Nur senden wenn der User explizit ein Limit gesetzt hat
+  if (maxTokens > 0) {
+    body.max_tokens = maxTokens;
+  }
+
+  // Reasoning effort nur wenn Provider Reasoning enabled hat
+  if (reasoningEffort) {
+    body.reasoning_effort = reasoningEffort;
+  }
 
   try {
     const response = await fetch(`${cleanBaseURL}/v1/chat/completions`, {
@@ -71,10 +104,18 @@ export async function sendChatMessage(
 
         try {
           const parsed: StreamChunk = JSON.parse(data);
-          const content = parsed.choices?.[0]?.delta?.content;
-          if (content) {
-            onChunk(content);
+          const delta = parsed.choices?.[0]?.delta;
+
+          // Reasoning content (für DeepSeek-R1, o1, etc.)
+          if (delta?.reasoning_content && onReasoningChunk) {
+            onReasoningChunk(delta.reasoning_content);
           }
+
+          // Normal content
+          if (delta?.content) {
+            onChunk(delta.content);
+          }
+
           if (parsed.choices?.[0]?.finish_reason) {
             onDone();
             return;
@@ -93,10 +134,10 @@ export async function sendChatMessage(
   }
 }
 
-export async function testConnection(
+export async function fetchModels(
   baseURL: string,
   apiKey: string
-): Promise<{ ok: boolean; message: string }> {
+): Promise<{ ok: boolean; models: string[]; message: string }> {
   const cleanBaseURL = baseURL.replace(/\/+$/, "");
 
   try {
@@ -108,21 +149,35 @@ export async function testConnection(
     });
 
     if (response.ok) {
-      const data = await response.json();
+      const data: ModelListResponse = await response.json();
+      const models = (data.data || [])
+        .map((m) => m.id)
+        .filter((id) => !id.startsWith("_")); // Internals rausfiltern
       return {
         ok: true,
-        message: `Verbunden. ${data.data?.length || "?"} Modelle verfügbar.`,
+        models,
+        message: `${models.length} Modelle gefunden`,
       };
     }
 
     return {
       ok: false,
-      message: `Status ${response.status}: ${await response.text().then(t => t.slice(0, 100))}`,
+      models: [],
+      message: `Status ${response.status}`,
     };
   } catch (error) {
     return {
       ok: false,
-      message: `Verbindungsfehler: ${(error as Error).message}`,
+      models: [],
+      message: `Fehler: ${(error as Error).message}`,
     };
   }
+}
+
+export async function testConnection(
+  baseURL: string,
+  apiKey: string
+): Promise<{ ok: boolean; message: string }> {
+  const result = await fetchModels(baseURL, apiKey);
+  return { ok: result.ok, message: result.message };
 }

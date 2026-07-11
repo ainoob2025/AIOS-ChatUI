@@ -21,6 +21,10 @@ export interface ModelConfig {
   baseURL: string;
   apiKey: string;
   model: string;
+  reasoningEnabled: boolean;
+  reasoningEffort: "low" | "medium" | "high";
+  /** Fetched from /v1/models — cached model list for this provider */
+  availableModels: string[];
 }
 
 export interface AppSettings {
@@ -28,6 +32,7 @@ export interface AppSettings {
   activeModelId: string;
   systemPrompt: string;
   temperature: number;
+  /** 0 = kein Limit (Server-Default). Nur senden wenn > 0. */
   maxTokens: number;
 }
 
@@ -37,14 +42,27 @@ export interface ChatCompletionRequest {
   stream: boolean;
   temperature?: number;
   max_tokens?: number;
+  reasoning_effort?: string;
 }
 
 export interface StreamChunk {
   choices: {
     delta: {
       content?: string;
+      reasoning_content?: string;
     };
     index: number;
     finish_reason: string | null;
   }[];
+}
+
+export interface ModelListEntry {
+  id: string;
+  object: string;
+  owned_by?: string;
+}
+
+export interface ModelListResponse {
+  object: string;
+  data: ModelListEntry[];
 }
