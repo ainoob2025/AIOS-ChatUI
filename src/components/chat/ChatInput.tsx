@@ -204,7 +204,7 @@ export default function ChatInput({
             </Button>
 
             {modelOpen && (
-              <div className="absolute top-full left-0 mt-1 z-50 w-64 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
+              <div className="absolute bottom-full left-0 mb-1 z-50 w-64 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
                 <div className="text-[10px] text-[var(--text-muted)] px-3 py-1.5 border-b border-[var(--border)]">
                   Provider & Modell
                 </div>
@@ -293,7 +293,7 @@ export default function ChatInput({
               </Button>
 
               {reasoningOpen && (
-                <div className="absolute top-full left-0 mt-1 z-50 w-28 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
+                <div className="absolute bottom-full left-0 mb-1 z-50 w-28 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
                   {(["low", "medium", "high"] as const).map((level) => (
                     <button
                       key={level}
