@@ -37,6 +37,8 @@ export interface AppSettings {
   temperature: number;
   /** 0 = kein Limit (Server-Default). Nur senden wenn > 0. */
   maxTokens: number;
+  /** UI-Schriftgröße: sm=12px, md=14px, lg=16px, xl=18px */
+  uiScale: "sm" | "md" | "lg" | "xl";
 }
 
 export interface ChatCompletionRequest {

@@ -11,6 +11,8 @@ interface ChatInputProps {
   onStop: () => void;
   isStreaming: boolean;
   disabled?: boolean;
+  /** Ändert sich bei jedem Send → triggert Fokus */
+  focusTrigger: number;
 }
 
 export default function ChatInput({
@@ -18,6 +20,7 @@ export default function ChatInput({
   onStop,
   isStreaming,
   disabled,
+  focusTrigger,
 }: ChatInputProps) {
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -31,10 +34,16 @@ export default function ChatInput({
     }
   }, [input]);
 
-  // Focus on mount
+  // Focus on mount + when focusTrigger changes
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (focusTrigger > 0 && !isStreaming) {
+      textareaRef.current?.focus();
+    }
+  }, [focusTrigger, isStreaming]);
 
   const handleSend = useCallback(() => {
     const trimmed = input.trim();

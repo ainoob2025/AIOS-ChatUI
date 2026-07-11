@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   systemPrompt: "",
   temperature: 0.7,
   maxTokens: 0, // 0 = kein Limit
+  uiScale: "md",
 };
 
 interface ChatStore {
@@ -267,7 +268,7 @@ export const useChatStore = create<ChatStore>()(
     }),
     {
       name: "aios-chatui-storage",
-      version: 3,
+      version: 4,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as {
           conversations: Conversation[];
@@ -289,6 +290,9 @@ export const useChatStore = create<ChatStore>()(
         }
         if (version < 1 && state.settings?.maxTokens === 4096) {
           state.settings.maxTokens = 0;
+        }
+        if (!(state.settings as AppSettings).uiScale) {
+          (state.settings as AppSettings).uiScale = "md";
         }
         return state;
       },

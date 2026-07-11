@@ -402,6 +402,27 @@ export default function SettingsDialog() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-xs text-[var(--text-secondary)]">
+                  UI-Schriftgröße
+                </Label>
+                <Select
+                  value={settings.uiScale}
+                  onValueChange={(v) =>
+                    v && updateSettings({ uiScale: v as "sm" | "md" | "lg" | "xl" })
+                  }
+                >
+                  <SelectTrigger className="bg-[var(--surface-elevated)] border-[var(--border)] text-xs h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0d0d10] border-[var(--border-strong)]">
+                    <SelectItem value="sm" className="text-xs">Klein (12px)</SelectItem>
+                    <SelectItem value="md" className="text-xs">Mittel (14px)</SelectItem>
+                    <SelectItem value="lg" className="text-xs">Groß (16px)</SelectItem>
+                    <SelectItem value="xl" className="text-xs">Extra groß (18px)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-[var(--text-secondary)]">
                   Temperature
                 </Label>
                 <Input

@@ -62,6 +62,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* === UI Scale === */
+.scale-sm { font-size: 12px; }
+.scale-md { font-size: 14px; }
+.scale-lg { font-size: 16px; }
+.scale-xl { font-size: 18px; }
+
+html {
+  font-size: 14px;
+}
+
 /* Subtle dot-grid background (Grok-like) */
 body::before {
   content: "";

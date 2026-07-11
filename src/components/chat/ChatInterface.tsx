@@ -30,6 +30,7 @@ export default function ChatInterface() {
   const [reasoningEffort, setReasoningEffort] = useState<
     "low" | "medium" | "high"
   >("medium");
+  const [focusTrigger, setFocusTrigger] = useState(0);
 
   const activeConversation = conversations.find(
     (c) => c.id === activeConversationId
@@ -76,6 +77,9 @@ export default function ChatInterface() {
         timestamp: Date.now(),
       };
       addMessage(convId, userMessage);
+
+      // Trigger focus after send
+      setFocusTrigger((n) => n + 1);
 
       // Create assistant placeholder
       const assistantId = uuidv4();
@@ -234,6 +238,7 @@ export default function ChatInterface() {
           onSend={handleSend}
           onStop={handleStop}
           isStreaming={isStreaming}
+          focusTrigger={focusTrigger}
         />
       </div>
     </div>
