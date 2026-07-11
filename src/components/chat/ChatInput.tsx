@@ -127,7 +127,7 @@ export default function ChatInput({
   };
 
   return (
-    <div className="border-t border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-xl">
+    <div className="bg-transparent">
       <div className="max-w-3xl mx-auto px-4 py-3">
         {/* Input Row */}
         <div

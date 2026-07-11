@@ -199,7 +199,7 @@ export default function ChatInterface() {
                 </p>
               </div>
             ) : (
-              <div className="pb-4">
+              <div className="pb-6">
                 {activeConversation.messages.map((msg) => (
                   <ChatMessage
                     key={msg.id}
