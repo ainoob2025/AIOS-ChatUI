@@ -15,6 +15,7 @@ const DEFAULT_MODEL: ModelConfig = {
   model: "main-model",
   reasoningEnabled: false,
   reasoningEffort: "medium",
+  streamingEnabled: true,
   availableModels: [],
 };
 
@@ -266,13 +267,13 @@ export const useChatStore = create<ChatStore>()(
     }),
     {
       name: "aios-chatui-storage",
-      version: 2,
+      version: 3,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as {
           conversations: Conversation[];
           settings: AppSettings;
         };
-        if (version < 2 && state.settings?.models) {
+        if (version < 3 && state.settings?.models) {
           state.settings.models = state.settings.models.map((m) =>
             Object.assign(
               {
@@ -280,6 +281,7 @@ export const useChatStore = create<ChatStore>()(
                 reasoningEffort: "medium",
                 availableModels: [],
                 endpoint: "/v1/chat/completions",
+                streamingEnabled: true,
               } satisfies Partial<ModelConfig>,
               m
             ) as ModelConfig

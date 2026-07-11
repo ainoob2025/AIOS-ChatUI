@@ -81,6 +81,7 @@ export default function SettingsDialog() {
       model: newModel.model,
       reasoningEnabled: false,
       reasoningEffort: "medium",
+      streamingEnabled: true,
       availableModels: [],
     });
     setNewModel({
@@ -189,14 +190,54 @@ export default function SettingsDialog() {
                 <Label className="text-xs text-[var(--text-secondary)]">
                   API Endpoint
                 </Label>
-                <Input
-                  value={activeModel.endpoint}
-                  onChange={(e) =>
-                    updateModel(activeModel.id, { endpoint: e.target.value })
+                <Select
+                  value={
+                    ["/v1/chat/completions", "/v1/messages", "/v1/responses"].includes(
+                      activeModel.endpoint
+                    )
+                      ? activeModel.endpoint
+                      : "__custom__"
                   }
-                  className="bg-[var(--surface-elevated)] border-[var(--border)] text-sm h-9 font-mono"
-                  placeholder="/v1/chat/completions"
-                />
+                  onValueChange={(v) => {
+                    if (v && v !== "__custom__") {
+                      updateModel(activeModel.id, { endpoint: v });
+                    }
+                  }}
+                >
+                  <SelectTrigger className="bg-[var(--surface-elevated)] border-[var(--border)] text-xs h-9 font-mono">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0d0d10] border-[var(--border-strong)]">
+                    <SelectItem value="/v1/chat/completions" className="text-xs font-mono">
+                      /v1/chat/completions (OpenAI)
+                    </SelectItem>
+                    <SelectItem value="/v1/messages" className="text-xs font-mono">
+                      /v1/messages (Anthropic)
+                    </SelectItem>
+                    <SelectItem value="/v1/responses" className="text-xs font-mono">
+                      /v1/responses (Responses API)
+                    </SelectItem>
+                    <SelectItem value="__custom__" className="text-xs">
+                      ✎ Custom...
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {(!["/v1/chat/completions", "/v1/messages", "/v1/responses"].includes(
+                  activeModel.endpoint
+                ) || activeModel.endpoint === "__custom__") && (
+                  <Input
+                    value={
+                      activeModel.endpoint === "__custom__"
+                        ? ""
+                        : activeModel.endpoint
+                    }
+                    onChange={(e) =>
+                      updateModel(activeModel.id, { endpoint: e.target.value })
+                    }
+                    className="bg-[var(--surface-elevated)] border-[var(--border)] text-sm h-9 font-mono mt-1"
+                    placeholder="/dein/custom/endpoint"
+                  />
+                )}
               </div>
 
               <div className="space-y-2">
@@ -247,6 +288,21 @@ export default function SettingsDialog() {
                     placeholder="main-model"
                   />
                 )}
+              </div>
+
+              {/* Streaming Toggle */}
+              <div className="flex items-center justify-between pt-1">
+                <Label className="text-xs text-[var(--text-secondary)]">
+                  Streaming (SSE)
+                </Label>
+                <Switch
+                  checked={activeModel.streamingEnabled}
+                  onCheckedChange={(checked) =>
+                    updateModel(activeModel.id, {
+                      streamingEnabled: checked,
+                    })
+                  }
+                />
               </div>
 
               {/* Reasoning Toggle */}

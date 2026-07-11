@@ -25,6 +25,7 @@ export interface ModelConfig {
   model: string;
   reasoningEnabled: boolean;
   reasoningEffort: "low" | "medium" | "high";
+  streamingEnabled: boolean;
   /** Fetched from /v1/models — cached model list for this provider */
   availableModels: string[];
 }

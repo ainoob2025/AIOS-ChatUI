@@ -123,6 +123,7 @@ export default function ChatInterface() {
         reasoningEffort: model.reasoningEnabled
           ? reasoningEffort
           : undefined,
+        streamingEnabled: model.streamingEnabled,
         onChunk: (chunk) => {
           appendToStreamingMessage(chunk);
           scrollToBottom();

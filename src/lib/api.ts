@@ -11,6 +11,7 @@ export interface SendMessageParams {
   temperature: number;
   maxTokens: number;
   reasoningEffort?: string;
+  streamingEnabled: boolean;
   onChunk: (text: string) => void;
   onReasoningChunk?: (text: string) => void;
   onDone: () => void;
@@ -30,6 +31,7 @@ export async function sendChatMessage(
     temperature,
     maxTokens,
     reasoningEffort,
+    streamingEnabled,
     onChunk,
     onReasoningChunk,
     onDone,
@@ -44,7 +46,7 @@ export async function sendChatMessage(
   const body: Record<string, unknown> = {
     model,
     messages,
-    stream: true,
+    stream: streamingEnabled,
     temperature,
   };
 
