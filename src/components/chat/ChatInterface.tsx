@@ -40,8 +40,8 @@ export default function ChatInterface() {
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
       const viewport = scrollRef.current.querySelector(
-        "[data-radix-scroll-area-viewport]"
-      );
+        "[data-slot=\"scroll-area-viewport\"]"
+      ) as HTMLElement | null;
       if (viewport) {
         viewport.scrollTop = viewport.scrollHeight;
       }
@@ -179,7 +179,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1" ref={scrollRef}>
+        <ScrollArea className="flex-1 min-h-0 overflow-hidden" ref={scrollRef}>
           <div className="max-w-3xl mx-auto w-full">
             {!activeConversation ||
             activeConversation.messages.length === 0 ? (

@@ -103,7 +103,7 @@ export default function ChatSidebar() {
       </div>
 
       {/* Conversation List */}
-      <ScrollArea className="flex-1 px-2">
+      <ScrollArea className="flex-1 min-h-0 px-2">
         <div className="space-y-0.5">
           {conversations.map((conv) => (
             <div
