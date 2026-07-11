@@ -8,9 +8,9 @@ import type { Conversation, Message, AppSettings, ModelConfig } from "./types";
 const DEFAULT_MODEL: ModelConfig = {
   id: "default",
   name: "AI-OS Local",
-  baseURL: "http://localhost:9001",
+  baseURL: "http://localhost:10010",
   apiKey: "not-needed",
-  model: "gemma-4-12b",
+  model: "main-model",
 };
 
 const DEFAULT_SETTINGS: AppSettings = {

@@ -51,7 +51,7 @@ export default function SettingsDialog() {
   // New model form state
   const [newModel, setNewModel] = useState({
     name: "",
-    baseURL: "http://localhost:9001",
+    baseURL: "http://localhost:10010",
     apiKey: "not-needed",
     model: "",
   });
@@ -145,7 +145,7 @@ export default function SettingsDialog() {
                     updateModel(activeModel.id, { baseURL: e.target.value })
                   }
                   className="bg-[var(--surface-elevated)] border-[var(--border)] text-sm h-9 font-mono"
-                  placeholder="http://localhost:9001"
+                  placeholder="http://localhost:10010"
                 />
               </div>
 
