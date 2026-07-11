@@ -414,10 +414,10 @@ export default function SettingsDialog() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-[#0d0d10] border-[var(--border-strong)]">
-                    <SelectItem value="sm" className="text-xs">Klein (12px)</SelectItem>
-                    <SelectItem value="md" className="text-xs">Mittel (14px)</SelectItem>
-                    <SelectItem value="lg" className="text-xs">Groß (16px)</SelectItem>
-                    <SelectItem value="xl" className="text-xs">Extra groß (18px)</SelectItem>
+                    <SelectItem value="sm" className="text-xs">Klein (14px)</SelectItem>
+                    <SelectItem value="md" className="text-xs">Mittel (18px)</SelectItem>
+                    <SelectItem value="lg" className="text-xs">Groß (24px)</SelectItem>
+                    <SelectItem value="xl" className="text-xs">TV/4K (32px)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

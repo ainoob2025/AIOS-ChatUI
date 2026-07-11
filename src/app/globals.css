@@ -63,10 +63,10 @@ body {
 }
 
 /* === UI Scale === */
-.scale-sm { font-size: 12px; }
-.scale-md { font-size: 14px; }
-.scale-lg { font-size: 16px; }
-.scale-xl { font-size: 18px; }
+.scale-sm { font-size: 14px; }
+.scale-md { font-size: 18px; }
+.scale-lg { font-size: 24px; }
+.scale-xl { font-size: 32px; }
 
 html {
   font-size: 14px;
