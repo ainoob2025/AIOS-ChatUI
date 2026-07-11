@@ -62,15 +62,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* === UI Scale === */
-.scale-sm { font-size: 14px; }
-.scale-md { font-size: 18px; }
-.scale-lg { font-size: 21px; }
-.scale-xl { font-size: 24px; }
-
-html {
-  font-size: 14px;
+/* === UI Scale — fluid responsive === */
+:root {
+  --scale-factor: 1;
 }
+
+/* Base: clamp(MIN bei 768px, PREFERRED vw-basiert, MAX bei 4K) * scale-factor */
+html {
+  font-size: clamp(14px, 2vw, 22px);
+}
+
+.scale-sm { --scale-factor: 0.85; font-size: calc(clamp(14px, 2vw, 22px) * 0.85); }
+.scale-md { --scale-factor: 1;    font-size: clamp(14px, 2vw, 22px); }
+.scale-lg { --scale-factor: 1.2;  font-size: calc(clamp(14px, 2vw, 22px) * 1.2); }
+.scale-xl { --scale-factor: 1.4;  font-size: calc(clamp(14px, 2vw, 22px) * 1.4); }
 
 /* Subtle dot-grid background (Grok-like) */
 body::before {

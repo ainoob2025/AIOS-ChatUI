@@ -1,12 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Plus,
   MessageSquare,
   Trash2,
   PanelLeftClose,
   PanelLeftOpen,
-  Settings,
 } from "lucide-react";
 import { useChatStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,18 @@ export default function ChatSidebar() {
     toggleSidebar,
     setSidebarOpen,
   } = useChatStore();
+
+  // Auto-collapse on small screens (< 768px)
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      }
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setSidebarOpen]);
 
   if (!sidebarOpen) {
     return (

@@ -171,7 +171,7 @@ export default function ChatInterface() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Messages */}
         <ScrollArea className="flex-1 min-h-0 overflow-hidden" ref={scrollRef}>
-          <div className="max-w-3xl mx-auto w-full">
+          <div className="max-w-[95vw] md:max-w-3xl mx-auto w-full">
             {!activeConversation ||
             activeConversation.messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full min-h-[60vh] px-4">
