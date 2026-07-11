@@ -1,13 +1,10 @@
-// API Layer für die Kommunikation mit dem AI-OS Backend
+// API Layer für die Kommunikation mit Backends
 
-import type {
-  ChatCompletionRequest,
-  ModelListResponse,
-  StreamChunk,
-} from "./types";
+import type { ModelListResponse, StreamChunk } from "./types";
 
 export interface SendMessageParams {
   baseURL: string;
+  endpoint: string;
   apiKey: string;
   model: string;
   messages: { role: string; content: string }[];
@@ -26,6 +23,7 @@ export async function sendChatMessage(
 ): Promise<void> {
   const {
     baseURL,
+    endpoint,
     apiKey,
     model,
     messages,
@@ -40,6 +38,8 @@ export async function sendChatMessage(
   } = params;
 
   const cleanBaseURL = baseURL.replace(/\/+$/, "");
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = `${cleanBaseURL}${cleanEndpoint}`;
 
   const body: Record<string, unknown> = {
     model,
@@ -48,18 +48,16 @@ export async function sendChatMessage(
     temperature,
   };
 
-  // Nur senden wenn der User explizit ein Limit gesetzt hat
   if (maxTokens > 0) {
     body.max_tokens = maxTokens;
   }
 
-  // Reasoning effort nur wenn Provider Reasoning enabled hat
   if (reasoningEffort) {
     body.reasoning_effort = reasoningEffort;
   }
 
   try {
-    const response = await fetch(`${cleanBaseURL}/v1/chat/completions`, {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,59 +74,78 @@ export async function sendChatMessage(
       );
     }
 
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error("No response body (streaming not supported?)");
-    }
+    // Check if streaming (SSE) or JSON response
+    const contentType = response.headers.get("content-type") || "";
 
-    const decoder = new TextDecoder();
-    let buffer = "";
+    if (contentType.includes("text/event-stream")) {
+      // SSE Streaming
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No response body");
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      const decoder = new TextDecoder();
+      let buffer = "";
 
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() || "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith("data: ")) continue;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
 
-        const data = trimmed.slice(6);
-        if (data === "[DONE]") {
-          onDone();
-          return;
-        }
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith("data: ")) continue;
 
-        try {
-          const parsed: StreamChunk = JSON.parse(data);
-          const delta = parsed.choices?.[0]?.delta;
-
-          // Reasoning content (für DeepSeek-R1, o1, etc.)
-          if (delta?.reasoning_content && onReasoningChunk) {
-            onReasoningChunk(delta.reasoning_content);
-          }
-
-          // Normal content
-          if (delta?.content) {
-            onChunk(delta.content);
-          }
-
-          if (parsed.choices?.[0]?.finish_reason) {
+          const data = trimmed.slice(6);
+          if (data === "[DONE]") {
             onDone();
             return;
           }
-        } catch {
-          // Skip malformed JSON chunks
+
+          try {
+            const parsed: StreamChunk = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta;
+
+            if (delta?.reasoning_content && onReasoningChunk) {
+              onReasoningChunk(delta.reasoning_content);
+            }
+
+            if (delta?.content) {
+              onChunk(delta.content);
+            }
+
+            if (parsed.choices?.[0]?.finish_reason) {
+              onDone();
+              return;
+            }
+          } catch {
+            // Skip malformed chunks
+          }
         }
       }
+    } else {
+      // Non-streaming JSON response (fallback)
+      const json = await response.json();
+
+      // OpenAI style
+      if (json.choices?.[0]?.message?.content) {
+        onChunk(json.choices[0].message.content);
+      }
+      // Anthropic style
+      else if (json.content?.[0]?.text) {
+        onChunk(json.content[0].text);
+      }
+      // Generic
+      else if (typeof json === "string") {
+        onChunk(json);
+      }
     }
+
     onDone();
   } catch (error) {
     if ((error as Error).name === "AbortError") {
-      return; // User cancelled
+      return;
     }
     onError(error as Error);
   }
@@ -152,19 +169,11 @@ export async function fetchModels(
       const data: ModelListResponse = await response.json();
       const models = (data.data || [])
         .map((m) => m.id)
-        .filter((id) => !id.startsWith("_")); // Internals rausfiltern
-      return {
-        ok: true,
-        models,
-        message: `${models.length} Modelle gefunden`,
-      };
+        .filter((id) => !id.startsWith("_"));
+      return { ok: true, models, message: `${models.length} Modelle gefunden` };
     }
 
-    return {
-      ok: false,
-      models: [],
-      message: `Status ${response.status}`,
-    };
+    return { ok: false, models: [], message: `Status ${response.status}` };
   } catch (error) {
     return {
       ok: false,

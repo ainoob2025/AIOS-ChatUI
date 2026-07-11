@@ -114,6 +114,7 @@ export default function ChatInterface() {
 
       await sendChatMessage({
         baseURL: model.baseURL,
+        endpoint: model.endpoint,
         apiKey: model.apiKey,
         model: model.model,
         messages: apiMessages,

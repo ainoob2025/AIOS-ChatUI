@@ -19,6 +19,8 @@ export interface ModelConfig {
   id: string;
   name: string;
   baseURL: string;
+  /** API-Endpoint-Pfad, z.B. /v1/chat/completions, /v1/messages (Anthropic), /v1/responses */
+  endpoint: string;
   apiKey: string;
   model: string;
   reasoningEnabled: boolean;

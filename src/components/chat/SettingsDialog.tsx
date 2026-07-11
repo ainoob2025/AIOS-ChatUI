@@ -76,6 +76,7 @@ export default function SettingsDialog() {
       id: uuidv4(),
       name: newModel.name,
       baseURL: newModel.baseURL,
+      endpoint: "/v1/chat/completions",
       apiKey: newModel.apiKey,
       model: newModel.model,
       reasoningEnabled: false,
@@ -181,6 +182,20 @@ export default function SettingsDialog() {
                   }
                   className="bg-[var(--surface-elevated)] border-[var(--border)] text-sm h-9 font-mono"
                   placeholder="http://localhost:10010"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs text-[var(--text-secondary)]">
+                  API Endpoint
+                </Label>
+                <Input
+                  value={activeModel.endpoint}
+                  onChange={(e) =>
+                    updateModel(activeModel.id, { endpoint: e.target.value })
+                  }
+                  className="bg-[var(--surface-elevated)] border-[var(--border)] text-sm h-9 font-mono"
+                  placeholder="/v1/chat/completions"
                 />
               </div>
 
