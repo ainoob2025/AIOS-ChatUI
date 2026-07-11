@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-OS ChatUI
 
-## Getting Started
+Moderne, Grok-inspirierte Chat-Oberfläche für AI-OS — mit konfigurierbaren Endpoints, API-Keys und Model-Providern.
 
-First, run the development server:
+![AI-OS ChatUI](public/og-image.png)
+
+## Features
+
+- **Grok-inspiriertes Design** — Dark Mode, Glassmorphism, subtle Glow-Effekte
+- **Multi-Model-Support** — Mehrere LLM-Backends konfigurierbar
+- **Chat-Verlauf** — Conversations persistieren im localStorage
+- **Streaming** — Echtzeit-Streaming der LLM-Antworten
+- **Markdown-Rendering** — Code-Highlighting, Tabellen, Blockquotes
+- **Vollständig konfigurierbar** — baseURL, API-Key, Model-Name, Temperature, Max Tokens
+- **OpenAI-kompatibles API-Format** — Funktioniert mit llama.cpp, Ollama, vLLM, LiteLLM, etc.
+
+## Tech Stack
+
+- **Next.js 16** (App Router)
+- **TypeScript**
+- **Tailwind CSS v4**
+- **shadcn/ui v4** (base-ui)
+- **Zustand** (State Management)
+- **react-markdown** + rehype-highlight (Markdown)
+
+## Quick Start
 
 ```bash
+# Installation
+npm install
+
+# Entwicklung
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Produktion
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Konfiguration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Alle Einstellungen werden im Browser gespeichert (localStorage). Öffne die Einstellungen über das Zahnrad-Icon in der Sidebar.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Standard-Modell
 
-## Learn More
+Standardmäßig ist ein lokales Modell vorkonfiguriert:
 
-To learn more about Next.js, take a look at the following resources:
+| Feld | Wert |
+|------|------|
+| Base URL | `http://localhost:9001` |
+| API Key | `not-needed` |
+| Model | `gemma-4-12b` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Neue Modelle hinzufügen
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Klick auf das Zahnrad-Icon (Settings)
+2. "Neues Modell hinzufügen"
+3. Base URL, API Key und Model-Name eintragen
+4. Verbindung testen mit "Verbindung testen"
 
-## Deploy on Vercel
+## API-Kompatibilität
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Die ChatUI nutzt das OpenAI-kompatible `/v1/chat/completions` Endpoint-Format mit SSE-Streaming.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Unterstützte Backends:
+- **llama.cpp** (server mode)
+- **Ollama**
+- **vLLM**
+- **LiteLLM**
+- **OpenAI**
+- **OpenRouter**
+- Jeder OpenAI-kompatible Server
+
+## Projektstruktur
+
+```
+src/
+├── app/
+│   ├── globals.css        # Design System (Grok-Style)
+│   ├── layout.tsx         # Root Layout
+│   └── page.tsx           # Main Page
+├── components/
+│   ├── chat/
+│   │   ├── ChatInterface.tsx   # Hauptkomponente
+│   │   ├── ChatSidebar.tsx     # Sidebar + History
+│   │   ├── ChatMessage.tsx     # Message-Bubble
+│   │   ├── ChatInput.tsx       # Eingabefeld
+│   │   ├── MessageContent.tsx  # Markdown-Renderer
+│   │   └── SettingsDialog.tsx  # Einstellungen
+│   └── ui/                     # shadcn/ui Komponenten
+└── lib/
+    ├── api.ts              # API-Kommunikation
+    ├── store.ts            # Zustand Store
+    ├── types.ts            # TypeScript Types
+    └── utils.ts            # Utilities
+```
+
+## License
+
+MIT
