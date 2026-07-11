@@ -129,8 +129,58 @@ export default function ChatInput({
   return (
     <div className="border-t border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-xl">
       <div className="max-w-3xl mx-auto px-4 py-3">
+        {/* Input Row */}
+        <div
+          className={cn(
+            "flex items-end gap-2 rounded-2xl border px-3 py-2 transition-all duration-200",
+            "bg-[var(--surface-elevated)]",
+            isStreaming
+              ? "border-[var(--border-strong)]"
+              : "border-[var(--border)] focus-within:border-[var(--accent)]/40 focus-within:shadow-[0_0_12px_var(--accent-glow)]"
+          )}
+        >
+          <Textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Schreib eine Nachricht..."
+            disabled={isStreaming}
+            rows={1}
+            className="flex-1 bg-transparent border-0 outline-none resize-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] min-h-[24px] max-h-[200px] py-1.5 px-1 focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
+
+          <div className="flex items-center gap-1 shrink-0">
+            {isStreaming ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onStop}
+                className="h-8 w-8 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+              >
+                <Square className="h-4 w-4" fill="currentColor" />
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSend}
+                disabled={!input.trim()}
+                className={cn(
+                  "h-8 w-8 transition-all",
+                  input.trim()
+                    ? "text-[var(--accent-light)] hover:bg-[var(--accent-glow)]"
+                    : "text-[var(--text-muted)]"
+                )}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
         {/* Toolbar Row */}
-        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
           {/* Model Dropdown */}
           <div ref={modelRef} className="relative">
             <Button
@@ -154,7 +204,7 @@ export default function ChatInput({
             </Button>
 
             {modelOpen && (
-              <div className="absolute bottom-full left-0 mb-1 z-50 w-64 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
+              <div className="absolute top-full left-0 mt-1 z-50 w-64 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
                 <div className="text-[10px] text-[var(--text-muted)] px-3 py-1.5 border-b border-[var(--border)]">
                   Provider & Modell
                 </div>
@@ -243,7 +293,7 @@ export default function ChatInput({
               </Button>
 
               {reasoningOpen && (
-                <div className="absolute bottom-full left-0 mb-1 z-50 w-28 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
+                <div className="absolute top-full left-0 mt-1 z-50 w-28 rounded-lg bg-[#0d0d10] border border-[var(--border-strong)] shadow-xl overflow-hidden">
                   {(["low", "medium", "high"] as const).map((level) => (
                     <button
                       key={level}
@@ -287,56 +337,6 @@ export default function ChatInput({
           >
             <Zap className="h-3.5 w-3.5" />
           </Button>
-        </div>
-
-        {/* Input Row */}
-        <div
-          className={cn(
-            "flex items-end gap-2 rounded-2xl border px-3 py-2 transition-all duration-200",
-            "bg-[var(--surface-elevated)]",
-            isStreaming
-              ? "border-[var(--border-strong)]"
-              : "border-[var(--border)] focus-within:border-[var(--accent)]/40 focus-within:shadow-[0_0_12px_var(--accent-glow)]"
-          )}
-        >
-          <Textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Schreib eine Nachricht..."
-            disabled={isStreaming}
-            rows={1}
-            className="flex-1 bg-transparent border-0 outline-none resize-none text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] min-h-[24px] max-h-[200px] py-1.5 px-1 focus-visible:ring-0 focus-visible:ring-offset-0"
-          />
-
-          <div className="flex items-center gap-1 shrink-0">
-            {isStreaming ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onStop}
-                className="h-8 w-8 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-              >
-                <Square className="h-4 w-4" fill="currentColor" />
-              </Button>
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSend}
-                disabled={!input.trim()}
-                className={cn(
-                  "h-8 w-8 transition-all",
-                  input.trim()
-                    ? "text-[var(--accent-light)] hover:bg-[var(--accent-glow)]"
-                    : "text-[var(--text-muted)]"
-                )}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
         </div>
 
         <div className="text-[10px] text-[var(--text-muted)] text-center mt-2">
