@@ -265,6 +265,37 @@ export const useChatStore = create<ChatStore>()(
     }),
     {
       name: "aios-chatui-storage",
+      version: 1,
+      migrate: (persistedState: unknown, version: number) => {
+        if (version === 0) {
+          const state = persistedState as {
+            conversations: Conversation[];
+            settings: AppSettings;
+          };
+          // Fill in missing fields for models from v0 -> v1
+          if (state.settings?.models) {
+            state.settings.models = state.settings.models.map((m) =>
+              Object.assign(
+                {
+                  reasoningEnabled: false,
+                  reasoningEffort: "medium",
+                  availableModels: [],
+                } satisfies Partial<ModelConfig>,
+                m
+              ) as ModelConfig
+            );
+          }
+          // maxTokens default: if was 4096 (old default), reset to 0
+          if (state.settings?.maxTokens === 4096) {
+            state.settings.maxTokens = 0;
+          }
+          return state;
+        }
+        return persistedState as {
+          conversations: Conversation[];
+          settings: AppSettings;
+        };
+      },
       partialize: (state) => ({
         conversations: state.conversations,
         settings: state.settings,
