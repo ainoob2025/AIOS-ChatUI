@@ -19,8 +19,21 @@ const DEFAULT_MODEL: ModelConfig = {
   availableModels: [],
 };
 
+const AIOS_GATEWAY: ModelConfig = {
+  id: "aios-gateway",
+  name: "AI-OS-Gateway",
+  baseURL: "http://localhost:10000",
+  endpoint: "/v1/chat/completions",
+  apiKey: "not-needed",
+  model: "main-model",
+  reasoningEnabled: false,
+  reasoningEffort: "medium",
+  streamingEnabled: true,
+  availableModels: [],
+};
+
 const DEFAULT_SETTINGS: AppSettings = {
-  models: [DEFAULT_MODEL],
+  models: [DEFAULT_MODEL, AIOS_GATEWAY],
   activeModelId: "default",
   systemPrompt: "",
   temperature: 0.7,
