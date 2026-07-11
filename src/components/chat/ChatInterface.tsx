@@ -8,7 +8,6 @@ import type { Message } from "@/lib/types";
 import ChatSidebar from "./ChatSidebar";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import ModelSwitcher from "./ModelSwitcher";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ChatInterface() {
@@ -170,14 +169,6 @@ export default function ChatInterface() {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar — Model Switcher */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--surface)]/50">
-          <ModelSwitcher
-            reasoningEffort={reasoningEffort}
-            onReasoningEffortChange={setReasoningEffort}
-          />
-        </div>
-
         {/* Messages */}
         <ScrollArea className="flex-1 min-h-0 overflow-hidden" ref={scrollRef}>
           <div className="max-w-3xl mx-auto w-full">
@@ -239,6 +230,8 @@ export default function ChatInterface() {
           onStop={handleStop}
           isStreaming={isStreaming}
           focusTrigger={focusTrigger}
+          reasoningEffort={reasoningEffort}
+          onReasoningEffortChange={setReasoningEffort}
         />
       </div>
     </div>
